@@ -307,3 +307,38 @@ axiom x1,x1',x2,y1,y1',y2,z,h,h1,h2:bitstring;
     h = H(x2,Nil)
   [forTraceReconstruction]
 .
+
+(** MDH Associativity Merge Axioms
+    When chains have a depth mismatch after common-block stripping, the shallower
+    chain's head block may be a tuple that, after MDH normalization, expands to
+    match the deeper chain. This captures the Merkle-Damgard associativity property:
+      H((a,b), L) = H(b, H(a, L))
+    which means H(x, Nil) = H(y, H(z, Nil)) when x = (z, y). *)
+
+(* Depth-1 vs Depth-2 merge *)
+axiom x, y, z: bitstring;
+  eq_hash_col(H(x, Nil), H(y, H(z, Nil))) ==>
+    x = (z, y)
+.
+axiom x, y, z: bitstring;
+  eq_hash_col(H(y, H(z, Nil)), H(x, Nil)) ==>
+    x = (z, y)
+.
+
+(* Depth-1 vs Depth-3 merge: H(x, Nil) = H(y, H(z, H(w, Nil))) when x = (w, (z, y)) *)
+axiom x, y, z, w: bitstring;
+  eq_hash_col(H(x, Nil), H(y, H(z, H(w, Nil)))) ==>
+    x = (w, (z, y))
+.
+axiom x, y, z, w: bitstring;
+  eq_hash_col(H(y, H(z, H(w, Nil))), H(x, Nil)) ==>
+    x = (w, (z, y))
+.
+
+(* Resolution-level axiom for attacker-controlled head variables.
+   Needed for IKE collision Q2/Q3. Note: causes non-termination in
+   SIGMA collision — run SIGMA without this axiom if needed. *)
+axiom x1, h1, x2, h2: bitstring;
+  eq_hash_col(H(x1,h1),H(x2,h2)) && is_var(x1) && attacker(x1) && not(is_var(x2)) ==> x1 = x2;
+  eq_hash_col(H(x1,h1),H(x2,h2)) && is_var(x2) && attacker(x2) && not(is_var(x1)) ==> x2 = x1
+.

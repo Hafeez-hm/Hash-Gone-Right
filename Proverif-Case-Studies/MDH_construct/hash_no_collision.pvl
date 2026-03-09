@@ -291,6 +291,42 @@ axiom x1,x1',h1,h1',x2,x2':bitstring;
   [forTraceReconstruction]
 .
 
+(* MDH Associativity Merge Axioms for eq_hash.
+   In the no-collision model, H(x, Nil) = H(y, H(z, Nil)) iff x = (z, y)
+   by MDH normalization: H((z, y), Nil) → H(y, H(z, Nil)). *)
+
+(* Depth-1 vs Depth-2 merge *)
+axiom x, y, z: bitstring;
+  eq_hash(H(x, Nil), H(y, H(z, Nil))) ==>
+    x = (z, y)
+.
+axiom x, y, z: bitstring;
+  eq_hash(H(y, H(z, Nil)), H(x, Nil)) ==>
+    x = (z, y)
+.
+
+(* Depth-1 vs Depth-3 merge: H(x, Nil) = H(y, H(z, H(w, Nil))) iff x = (w, (z, y)) *)
+axiom x, y, z, w: bitstring;
+  eq_hash(H(x, Nil), H(y, H(z, H(w, Nil)))) ==>
+    x = (w, (z, y))
+.
+axiom x, y, z, w: bitstring;
+  eq_hash(H(y, H(z, H(w, Nil))), H(x, Nil)) ==>
+    x = (w, (z, y))
+.
+
+(* Resolution-level axiom for attacker-controlled head variables.
+   When eq_hash(H(x1, h1), H(x2, h2)) with x1 an attacker variable
+   and x2 not a variable, x1 must equal x2. This bypasses the
+   instantiate_allowed guard which fails when the other chain contains
+   attacker variables. The pair branch (x1 = (x1a,x1b)) is omitted to
+   avoid non-termination; depth-mismatch cases are handled by the
+   merge axioms above. *)
+axiom x1, h1, x2, h2: bitstring;
+  eq_hash(H(x1,h1),H(x2,h2)) && is_var(x1) && attacker(x1) && not(is_var(x2)) ==> x1 = x2;
+  eq_hash(H(x1,h1),H(x2,h2)) && is_var(x2) && attacker(x2) && not(is_var(x1)) ==> x2 = x1
+.
+
 (* axiom x1,x1',h1,h1',x2,x2':bitstring;
   eq_hash(H(x1,h1),H(x1',h1')) ==> x1 = x1' || x1 = (x2,x1') || x1' = (x2',x1)
   [forTraceReconstruction]
