@@ -3,7 +3,7 @@
 **B.Tech Final Year Thesis Project**  
 **NIT Calicut, 2024-25**
 
-**Authors:** Arun Natarajan, Hafeez Muhammed  
+**Authors:**  Hafeez Muhammed, Arun Natarajan
 **Advisor:** Dr. Vinod Pathari
 
 ## Overview
@@ -142,5 +142,5 @@ This project builds upon ProVerif 2.03 (INRIA, CNRS 2000-2021) and the modificat
 
 ## Contact
 
-- Arun Natarajan - [GitHub](https://github.com/arunnats)
 - Hafeez Muhammed - [GitHub](https://github.com/Hafeez-hm)
+- Arun Natarajan - [GitHub](https://github.com/arunnats)
